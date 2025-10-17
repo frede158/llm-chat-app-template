@@ -9,6 +9,23 @@
  */
 import { Env, ChatMessage } from "./types";
 
+import { analyzeFile } from './analyzeFile';
+
+const input = document.getElementById('fileInput') as HTMLInputElement;
+const out = document.getElementById('analysisOut') as HTMLPreElement;
+
+input?.addEventListener('change', async () => {
+const f = input.files?.[0];
+if (!f) return;
+out.textContent = 'Analyserer…';
+try {
+const report = await analyzeFile(f);
+out.textContent = JSON.stringify(report, null, 2);
+} catch (e:any) {
+out.textContent = 'Fejl under analyse: ' + (e?.message || String(e));
+}
+});
+
 // Model ID for Workers AI model
 // https://developers.cloudflare.com/workers-ai/models/
 const MODEL_ID = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
@@ -97,3 +114,4 @@ async function handleChatRequest(
     );
   }
 }
+
